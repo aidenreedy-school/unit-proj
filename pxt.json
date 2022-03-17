@@ -2,7 +2,8 @@
     "name": "unit proj",
     "description": "",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "unit proj extension": "pub:21301-57216-72168-55566"
     },
     "files": [
         "main.blocks",

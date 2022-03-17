@@ -1,4 +1,5 @@
 function stab () {
+    attacking = true
     player_1.setImage(player_1_ability_list[1])
     blank_proj = sprites.createProjectileFromSprite(img`
         ..................................................
@@ -55,6 +56,7 @@ function stab () {
     pause(50)
     blank_proj.destroy()
     player_1.setImage(player_1_ability_list[0])
+    attacking = false
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     while (controller.up.isPressed()) {
@@ -77,7 +79,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (player_1_class == "warrior") {
         swing()
     } else if (player_1_class == "wizard") {
-        fireball()
+    	
     } else {
         stab()
     }
@@ -86,7 +88,7 @@ controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Press
     if (player_2_class == "snake") {
         chomp()
     } else if (player_2_class == "shroom") {
-        spore()
+        spore2()
     } else {
         dragon_fireball()
     }
@@ -114,7 +116,7 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function dragon_fireball () {
     player_2.setImage(player_2_ability_list[1])
-    projectile = sprites.createProjectileFromSprite(img`
+    fireball = sprites.createProjectileFromSprite(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -135,6 +137,9 @@ function dragon_fireball () {
     pause(200)
     player_2.setImage(player_2_ability_list[0])
 }
+scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
+    sprite.destroy()
+})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     while (controller.right.isPressed()) {
         player_1.setImage(player_1_move_list[7])
@@ -146,8 +151,10 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function block () {
     player_1.setImage(player_1_ability_list[2])
+    blocking = true
     pause(1000)
     player_1.setImage(player_1_ability_list[0])
+    blocking = false
 }
 function heal (life: number) {
     player_1.setImage(player_1_ability_list[2])
@@ -157,30 +164,18 @@ function heal (life: number) {
     }
     player_1.setImage(player_1_ability_list[0])
 }
-function fireball () {
-    player_1.setImage(player_1_ability_list[1])
-    pause(100)
-    projectile = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . 2 2 2 2 . . . 
-        . . . . . . . 2 2 4 4 4 4 2 . . 
-        . . . . 2 2 5 5 4 4 4 4 4 4 . . 
-        . . 5 5 5 5 4 4 4 4 4 4 4 4 . . 
-        . . 4 4 4 4 4 4 4 4 4 4 4 4 . . 
-        . . 5 5 2 2 5 4 4 4 4 4 4 4 . . 
-        . . . . . . 2 2 5 4 4 4 4 2 . . 
-        . . . . . . . . . 2 2 2 2 . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, player_1, 50, 0)
-    pause(100)
-    player_1.setImage(player_1_ability_list[0])
-}
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
+    if (blocking) {
+        sprite.destroy()
+    } else if (attacking) {
+        info.changeScoreBy(1)
+        sprite.destroy()
+    } else {
+        sprite.destroy()
+        info.changeLifeBy(-1)
+        scene.cameraShake(4, 500)
+    }
+})
 function trap () {
     player_1.setImage(player_1_ability_list[2])
     tiles.setTileAt(player_1.tilemapLocation(), sprites.swamp.swampTile3)
@@ -1254,7 +1249,13 @@ function chomp () {
     blank_proj.destroy()
     player_2.setImage(player_2_ability_list[0])
 }
+scene.onOverlapTile(SpriteKind.Enemy, sprites.swamp.swampTile3, function (sprite, location) {
+    info.changeScoreBy(1)
+    sprite.destroy()
+    tiles.setTileAt(location, sprites.dungeon.floorLight2)
+})
 function swing () {
+    attacking = true
     player_1.setImage(player_1_ability_list[1])
     blank_proj = sprites.createProjectileFromSprite(img`
         ..................................................
@@ -1311,15 +1312,47 @@ function swing () {
     pause(200)
     blank_proj.destroy()
     player_1.setImage(player_1_ability_list[0])
+    attacking = false
 }
+function fireball2 () {
+    player_1.setImage(player_1_ability_list[1])
+    pause(100)
+    fireball = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . 2 2 2 2 . . . 
+        . . . . . . . 2 2 4 4 4 4 2 . . 
+        . . . . 2 2 5 5 4 4 4 4 4 4 . . 
+        . . 5 5 5 5 4 4 4 4 4 4 4 4 . . 
+        . . 4 4 4 4 4 4 4 4 4 4 4 4 . . 
+        . . 5 5 2 2 5 4 4 4 4 4 4 4 . . 
+        . . . . . . 2 2 5 4 4 4 4 2 . . 
+        . . . . . . . . . 2 2 2 2 . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, player_1, 50, 0)
+    pause(100)
+    player_1.setImage(player_1_ability_list[0])
+}
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeScoreBy(1)
+    sprite.destroy()
+    otherSprite.destroy()
+})
 let enemybad: Sprite = null
 let spore: Sprite = null
-let projectile: Sprite = null
+let blocking = false
+let fireball: Sprite = null
 let player_2_ability_list: Image[] = []
 let player_2_move_list: Image[] = []
 let player_1_move_list: Image[] = []
 let blank_proj: Sprite = null
 let player_1_ability_list: Image[] = []
+let attacking = false
 let player_2: Sprite = null
 let player_1: Sprite = null
 let boss_killed = false
@@ -1340,13 +1373,29 @@ scene.cameraFollowSprite(player_1)
 controller.player2.moveSprite(player_2, 0, 0)
 controller.moveSprite(player_1)
 started = true
-forever(function () {
-    player_2.setPosition(player_1.x - 20, player_1.y - 20)
-})
-game.onUpdateInterval(500, function () {
+let spawner = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . d 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Player)
+tiles.placeOnTile(spawner, tiles.getTileLocation(29, 15))
+game.onUpdateInterval(1000, function () {
     if (started) {
         if (phasecheck() == 1) {
-            enemybad = sprites.createProjectileFromSide(img`
+            enemybad = sprites.create(img`
                 ........................
                 ........................
                 ........................
@@ -1371,10 +1420,28 @@ game.onUpdateInterval(500, function () {
                 ........................
                 ........................
                 ........................
-                `, -50, randint(-20, 20))
+                `, SpriteKind.Enemy)
+            tiles.placeOnTile(enemybad, tiles.getTileLocation(29, 15))
+            enemybad.setVelocity(-50, randint(-20, 20))
         } else if (phasecheck() == 2) {
             for (let index = 0; index < 2; index++) {
-                enemybad = sprites.createProjectileFromSide(img`
+                enemybad = sprites.create(img`
+                    ........................
+                    ........................
+                    ........................
+                    ........................
+                    ........................
+                    ............ffff........
+                    ...........f7777f.......
+                    ..........f777777f......
+                    .........f77f77f7f......
+                    ........ff7ff7ff77f.....
+                    .......f77777777777f....
+                    ......f7777777777777f...
+                    ......f77777fff77777f...
+                    .....f77777f777f77777f..
+                    .....f777777777777777f..
+                    ......fffffffffffffff...
                     ........................
                     ........................
                     ........................
@@ -1382,28 +1449,14 @@ game.onUpdateInterval(500, function () {
                     ........................
                     ........................
                     ........................
-                    ..........ffff..........
-                    ........ff7777f.........
-                    .......f7777777f........
-                    ......f777777777f.......
-                    .....f7777f777f77f......
-                    .....f777f777ff777f.....
-                    ....f77777777777777f....
-                    ...f7777777777777777f...
-                    ..f77777ffffffff7777f...
-                    ..f7777f77777777f7777f..
-                    ..f777777777777777777f..
-                    ...ffffffffffffffffff...
                     ........................
-                    ........................
-                    ........................
-                    ........................
-                    ........................
-                    `, -20, randint(-20, 20))
+                    `, SpriteKind.Enemy)
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                enemybad.setVelocity(-20, randint(-20, 20))
             }
         } else if (phasecheck() == 3) {
             for (let index = 0; index < 3; index++) {
-                enemybad = sprites.createProjectileFromSide(img`
+                enemybad = sprites.create(img`
                     . . f f f . . . . . . . . f f f 
                     . f f c c . . . . . . f c b b c 
                     f f c c . . . . . . f c b b c . 
@@ -1420,11 +1473,13 @@ game.onUpdateInterval(500, function () {
                     . f 2 2 2 2 b b b b c f . . . . 
                     . . f b b b b b b c f . . . . . 
                     . . . f f f f f f f . . . . . . 
-                    `, -50, randint(-10, 10))
+                    `, SpriteKind.Enemy)
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                enemybad.setVelocity(-30, randint(-30, 30))
             }
         } else if (phasecheck() == 4) {
             for (let index = 0; index < 4; index++) {
-                enemybad = sprites.createProjectileFromSide(img`
+                enemybad = sprites.create(img`
                     ...........fffffff...ccfff..........
                     ..........fbbbbbbbffcbbbbf..........
                     ..........fbb111bbbbbffbf...........
@@ -1441,10 +1496,13 @@ game.onUpdateInterval(500, function () {
                     ............cc1111fbdbbfdddc...fbbf.
                     ..............cccfffbdbbfcc.....fbbf
                     ....................fffff........fff
-                    `, -100, randint(-50, 50))
+                    `, SpriteKind.Enemy)
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                enemybad.setVelocity(-100, randint(-20, 20))
             }
-        } else {
-        	
         }
     }
+})
+forever(function () {
+    player_2.setPosition(player_1.x - 20, player_1.y - 20)
 })
