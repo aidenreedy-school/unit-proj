@@ -79,7 +79,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (player_1_class == "warrior") {
         swing()
     } else if (player_1_class == "wizard") {
-    	
+        fireball2()
     } else {
         stab()
     }
@@ -1373,25 +1373,6 @@ scene.cameraFollowSprite(player_1)
 controller.player2.moveSprite(player_2, 0, 0)
 controller.moveSprite(player_1)
 started = true
-let spawner = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . d 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `, SpriteKind.Player)
-tiles.placeOnTile(spawner, tiles.getTileLocation(29, 15))
 game.onUpdateInterval(1000, function () {
     if (started) {
         if (phasecheck() == 1) {
@@ -1421,7 +1402,7 @@ game.onUpdateInterval(1000, function () {
                 ........................
                 ........................
                 `, SpriteKind.Enemy)
-            tiles.placeOnTile(enemybad, tiles.getTileLocation(29, 15))
+            tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
             enemybad.setVelocity(-50, randint(-20, 20))
         } else if (phasecheck() == 2) {
             for (let index = 0; index < 2; index++) {
