@@ -76,31 +76,35 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (player_1_class == "warrior") {
-        swing()
-    } else if (player_1_class == "wizard") {
-        fireball2()
-    } else {
-        stab()
+    for (let index = 0; index <= 1; index++) {
+        if (index == 0) {
+            if (player_1_class == "warrior") {
+                swing()
+            } else if (player_1_class == "wizard") {
+                fireball2()
+            } else {
+                stab()
+            }
+        } else {
+            if (player_2_class == "snake") {
+                chomp()
+            } else if (player_2_class == "shroom") {
+                spore2()
+            } else {
+                dragon_fireball()
+            }
+        }
     }
 })
-controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function () {
-    if (player_2_class == "snake") {
-        chomp()
-    } else if (player_2_class == "shroom") {
-        spore2()
-    } else {
-        dragon_fireball()
-    }
-})
+// a function with return values
 function phasecheck () {
     if (info.score() < 25) {
         return 1
     } else if (info.score() >= 25 && info.score() < 50) {
         return 2
-    } else if (info.score() >= 50) {
+    } else if (info.score() >= 50 && info.score() < 75) {
         return 3
-    } else if (boss_killed) {
+    } else if (info.score() >= 75) {
         return 4
     }
     return -1
@@ -156,18 +160,19 @@ function block () {
     player_1.setImage(player_1_ability_list[0])
     blocking = false
 }
+// a function with parameter
 function heal (life: number) {
+    boga_temp = randint(1, 3)
     player_1.setImage(player_1_ability_list[2])
-    if (life < 2) {
+    if (life < 2 && boga_temp == 1) {
         info.changeLifeBy(1)
         pause(7000)
     }
     player_1.setImage(player_1_ability_list[0])
 }
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
-    if (blocking) {
-        sprite.destroy()
-    } else if (attacking) {
+    // boolean operator
+    if (blocking || attacking) {
         info.changeScoreBy(1)
         sprite.destroy()
     } else {
@@ -227,6 +232,7 @@ function character_spawner () {
             . . . . . f f f f f f . . . . . 
             . . . . . f f . . f f . . . . . 
             `, SpriteKind.Player)
+        // array
         player_1_move_list = [
         img`
             . . . . . . f f f f . . . . . . 
@@ -1184,6 +1190,7 @@ function character_spawner () {
     }
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    // a while loop
     while (controller.down.isPressed()) {
         player_1.setImage(player_1_move_list[1])
         pause(100)
@@ -1250,9 +1257,15 @@ function chomp () {
     player_2.setImage(player_2_ability_list[0])
 }
 scene.onOverlapTile(SpriteKind.Enemy, sprites.swamp.swampTile3, function (sprite, location) {
-    info.changeScoreBy(1)
-    sprite.destroy()
-    tiles.setTileAt(location, sprites.dungeon.floorLight2)
+    oga_temp = randint(1, 2)
+    if (oga_temp == 1) {
+        info.changeScoreBy(1)
+        sprite.destroy()
+        tiles.setTileAt(location, sprites.dungeon.floorLight2)
+    } else {
+        tiles.setTileAt(location, sprites.dungeon.floorLight2)
+        player_1.sayText("aw man", 500, false)
+    }
 })
 function swing () {
     attacking = true
@@ -1344,37 +1357,39 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
     otherSprite.destroy()
 })
 let enemybad: Sprite = null
+let oga_temp = 0
 let spore: Sprite = null
+let boga_temp = 0
 let blocking = false
 let fireball: Sprite = null
 let player_2_ability_list: Image[] = []
 let player_2_move_list: Image[] = []
+let player_2: Sprite = null
 let player_1_move_list: Image[] = []
 let blank_proj: Sprite = null
 let player_1_ability_list: Image[] = []
 let attacking = false
-let player_2: Sprite = null
 let player_1: Sprite = null
-let boss_killed = false
 let player_2_class = ""
 let player_1_class = ""
 let started = false
 game.splash("classes are warrior, wizard or rogue.")
-player_1_class = game.askForString("what class will you be P1?")
+player_1_class = game.askForString("what class will you be?")
 game.splash("pets are dragon, snake or shroom.")
-player_2_class = game.askForString("what pet will you be P2?")
+player_2_class = game.askForString("what pet will you have?")
+// tilemap
 tiles.setCurrentTilemap(tilemap`level1`)
 tiles.setTileAt(tiles.getTileLocation(1, 1), sprites.dungeon.floorLight2)
 character_spawner()
 info.setScore(0)
-boss_killed = false
+let boss_killed = false
 tiles.placeOnTile(player_1, tiles.getTileLocation(2, 2))
 scene.cameraFollowSprite(player_1)
-controller.player2.moveSprite(player_2, 0, 0)
 controller.moveSprite(player_1)
 started = true
 game.onUpdateInterval(1000, function () {
     if (started) {
+        // conditional statement
         if (phasecheck() == 1) {
             enemybad = sprites.create(img`
                 ........................
@@ -1402,7 +1417,7 @@ game.onUpdateInterval(1000, function () {
                 ........................
                 ........................
                 `, SpriteKind.Enemy)
-            tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+            tiles.placeOnTile(enemybad, tiles.getTileLocation(20, randint(1, 20)))
             enemybad.setVelocity(-50, randint(-20, 20))
         } else if (phasecheck() == 2) {
             for (let index = 0; index < 2; index++) {
@@ -1432,7 +1447,7 @@ game.onUpdateInterval(1000, function () {
                     ........................
                     ........................
                     `, SpriteKind.Enemy)
-                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, randint(1, 20)))
                 enemybad.setVelocity(-20, randint(-20, 20))
             }
         } else if (phasecheck() == 3) {
@@ -1455,7 +1470,7 @@ game.onUpdateInterval(1000, function () {
                     . . f b b b b b b c f . . . . . 
                     . . . f f f f f f f . . . . . . 
                     `, SpriteKind.Enemy)
-                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, randint(1, 20)))
                 enemybad.setVelocity(-30, randint(-30, 30))
             }
         } else if (phasecheck() == 4) {
@@ -1478,12 +1493,20 @@ game.onUpdateInterval(1000, function () {
                     ..............cccfffbdbbfcc.....fbbf
                     ....................fffff........fff
                     `, SpriteKind.Enemy)
-                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, 10))
+                tiles.placeOnTile(enemybad, tiles.getTileLocation(20, randint(1, 20)))
                 enemybad.setVelocity(-100, randint(-20, 20))
             }
         }
     }
 })
 forever(function () {
-    player_2.setPosition(player_1.x - 20, player_1.y - 20)
+    if (player_2_class == "snake") {
+        player_2.setPosition(player_1.x + 20, player_1.y)
+    } else if (player_2_class == "shroom") {
+        player_2.setPosition(player_1.x, player_1.y - 20)
+    } else if (player_2_class == "dragon") {
+        player_2.setPosition(player_1.x - 20, player_1.y + 20)
+    } else {
+        player_2.setPosition(player_1.x - 20, player_1.y - 20)
+    }
 })
