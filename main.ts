@@ -162,7 +162,7 @@ function block () {
 }
 // a function with parameter
 function heal (life: number) {
-    boga_temp = randint(1, 3)
+    boga_temp = randint(1, 6)
     player_1.setImage(player_1_ability_list[2])
     if (life < 2 && boga_temp == 1) {
         info.changeLifeBy(1)
@@ -188,9 +188,10 @@ function trap () {
     player_1.setImage(player_1_ability_list[0])
 }
 function spore2 () {
+    shmooga = randint(1, 5)
     player_2.setImage(player_2_ability_list[1])
     pause(500)
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < shmooga; index++) {
         spore = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -211,6 +212,7 @@ function spore2 () {
             `, player_2, randint(-25, 25), randint(-25, 25))
     }
     player_2.setImage(player_2_ability_list[0])
+    pause(200)
 }
 function character_spawner () {
     if (player_1_class == "warrior") {
@@ -1184,7 +1186,7 @@ function character_spawner () {
             . . f d d d b . . f f b b b f . 
             `]
     } else {
-        player_2_class = game.askForString("what pet will you be P2? please use a correct input.")
+        player_2_class = game.askForString("what pet will you be? please use a correct input.")
         player_1.destroy()
         character_spawner()
     }
@@ -1359,6 +1361,7 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
 let enemybad: Sprite = null
 let oga_temp = 0
 let spore: Sprite = null
+let shmooga = 0
 let boga_temp = 0
 let blocking = false
 let fireball: Sprite = null
