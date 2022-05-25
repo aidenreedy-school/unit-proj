@@ -67,14 +67,35 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (player_1_class == "warrior") {
-        block()
-    } else if (player_1_class == "wizard") {
-        heal(info.player1.life())
-    } else {
-        trap()
+    for (let index = 0; index <= 1; index++) {
+        if (index == 0) {
+            if (player_1_class == "warrior") {
+                block()
+            } else if (player_1_class == "wizard") {
+                heal(info.player1.life())
+            } else {
+                trap()
+            }
+        } else {
+            if (player_2_class == "snake") {
+                shed(info.life())
+            } else if (player_2_class == "shroom") {
+                fungi()
+            } else {
+            	
+            }
+        }
     }
 })
+function shed (life: number) {
+    dooga_temp = randint(1, 35)
+    if (life < 2 && dooga_temp == 3) {
+        player_2.setImage(player_2_ability_list[2])
+        pause(1000)
+        info.changeLifeBy(1)
+        player_2.setImage(player_2_ability_list[0])
+    }
+}
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     for (let index = 0; index <= 1; index++) {
         if (index == 0) {
@@ -96,6 +117,12 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
+function fungi () {
+    player_2.setImage(player_2_ability_list[2])
+    pause(500)
+    tiles.setTileAt(player_2.tilemapLocation(), assets.tile`myTile`)
+    player_2.setImage(player_2_ability_list[0])
+}
 // a function with return values
 function phasecheck () {
     if (info.score() < 25) {
@@ -116,6 +143,15 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         pause(100)
         player_1.setImage(player_1_move_list[6])
         pause(100)
+    }
+})
+scene.onOverlapTile(SpriteKind.Enemy, assets.tile`myTile`, function (sprite, location) {
+    googa_temp = randint(1, 20)
+    if (googa_temp == 1) {
+        sprite.destroy()
+        tiles.setTileAt(location, sprites.dungeon.floorLight2)
+    } else {
+        tiles.setTileAt(location, sprites.dungeon.floorLight2)
     }
 })
 function dragon_fireball () {
@@ -144,6 +180,35 @@ function dragon_fireball () {
 scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
     sprite.destroy()
 })
+function ult () {
+    yooga_temp = randint(1, 100)
+    if (yooga_temp == 3) {
+        player_2.setImage(player_2_ability_list[2])
+        for (let index = 0; index < 50; index++) {
+            fireball = sprites.createProjectileFromSprite(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . 2 2 2 2 . . . 
+                . . . . . . . 2 2 4 4 4 4 2 . . 
+                . . . . 2 2 5 5 4 4 4 4 4 4 . . 
+                . . 5 5 5 5 4 4 4 4 4 4 4 4 . . 
+                . . 4 4 4 4 4 4 4 4 4 4 4 4 . . 
+                . . 5 5 2 2 5 4 4 4 4 4 4 4 . . 
+                . . . . . . 2 2 5 4 4 4 4 2 . . 
+                . . . . . . . . . 2 2 2 2 . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, player_2, 50, randint(0, 50))
+        }
+        player_2.setImage(player_2_ability_list[0])
+    } else {
+        pause(5000)
+    }
+}
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     while (controller.right.isPressed()) {
         player_1.setImage(player_1_move_list[7])
@@ -1006,6 +1071,23 @@ function character_spawner () {
             . c d d d b 5 5 d c c c c . . . 
             . . c c c b 5 5 b c c c c c . . 
             . . . . c b 5 5 d c b b b c . . 
+            `, img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . c c c c . . . . 
+            . . . . . . c c 2 2 2 2 c c . . 
+            . . . . . c 2 2 2 2 2 2 2 2 c . 
+            . . . . c 2 2 2 f 1 2 2 2 2 2 c 
+            . . 4 4 4 4 2 2 f f 2 2 2 2 2 c 
+            . . e 4 e 4 e 2 2 2 2 2 2 2 2 c 
+            . . 4 e 4 e 4 4 2 2 2 1 2 2 c c 
+            . . c 2 2 2 4 4 2 2 2 3 3 3 4 4 
+            . . c 2 2 2 2 2 2 2 2 3 4 4 4 4 
+            . c c 2 2 2 2 2 2 2 c 3 3 3 4 4 
+            c 2 c 2 2 2 2 2 2 2 2 c 2 2 c . 
+            c 2 2 2 2 2 2 2 2 c c c c c c . 
+            . c 2 2 2 b 2 2 2 c c c c . . . 
+            . . c c c b 2 2 b c c c c c . . 
+            . . . . c b 2 2 2 c 2 2 2 c . . 
             `]
     } else if (player_2_class == "snake") {
         player_2 = sprites.create(img`
@@ -1081,20 +1163,37 @@ function character_spawner () {
             `, img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . c c c c c 
-            . . . . . . . . . c c 7 7 7 6 c 
-            . . . . . . . . c c 7 7 7 c c . 
-            . . . . . . . . c 6 7 7 c . . . 
-            . . . . . . . . c 6 6 6 c . . . 
-            . . . c c c c c c 6 6 6 c c . . 
-            . . c 6 7 7 7 7 6 c c 6 6 6 c . 
-            . c 7 7 7 7 7 7 7 7 c 6 6 6 c c 
-            c 6 7 7 7 7 7 7 7 7 6 c 6 6 6 c 
-            c 7 c 6 6 6 6 c 7 7 7 c 6 6 6 c 
-            f 7 c c 6 6 c c 7 7 7 f 6 6 6 c 
-            f 7 6 f 6 6 f 6 7 7 7 f 6 6 6 c 
-            . c 1 c f f 1 c 7 6 f 6 6 c c . 
-            . c c c c c c c c c c c c . . . 
+            c c c c c . . . . . . . . . . . 
+            c 6 7 7 7 c c . . . . . . . . . 
+            . c c 7 7 7 c c . . . . . . . . 
+            . . . c 7 7 6 c . . . . . . . . 
+            . . . c 6 6 6 c . . . . . . . . 
+            . . c c 6 6 6 c c c c c c . . . 
+            . c 6 6 6 c c 6 7 7 7 7 6 c . . 
+            c c 6 6 6 c 7 7 7 7 7 7 7 7 c . 
+            c 6 6 6 c 6 7 7 7 7 7 7 7 7 6 c 
+            c 6 6 6 c 7 7 7 c 6 6 6 6 c 7 c 
+            c 6 6 6 f 7 7 7 c c 6 6 c c 7 f 
+            c 6 6 6 f 7 7 7 6 f 6 6 f 6 7 f 
+            . c c 6 6 f 6 7 c 1 f f c 1 c . 
+            . . . c c c c c c c c c c c c . 
+            `, img`
+            . . . . . . c c c c c c . . . . 
+            . . . . . c b b b b b b c . . . 
+            . . . . c b b b b b b b b c . . 
+            . . . c b b b b b b b b b b c . 
+            . . . c b b b c b b b b c b c . 
+            . . . f b b b b f b b f b b f . 
+            . . . f b b b b b b b b b b f . 
+            . . c f b b b c b b b b b f . . 
+            . c b b f b b b c c c c f . . . 
+            c b b b b f c b b b b 2 b c . . 
+            c c b b b b c f c b b 2 b b c . 
+            . . c b b b c c f b b b b b b c 
+            . . f b b b b c b b b b b b b f 
+            . . f c b b b b b b b b b b b f 
+            . . . f b b b b b b b b b b f . 
+            . . . . f c c c c c c c c c . . 
             `]
     } else if (player_2_class == "shroom") {
         player_2 = sprites.create(img`
@@ -1178,6 +1277,23 @@ function character_spawner () {
             c 7 7 7 7 b b d d d d d c c b f 
             c 7 7 c b d d d d d d c d c c . 
             f 7 c c c d d d c d d c d b c . 
+            f b c c c d d d c d d d d d f . 
+            f b c c c d d d d d b b b d f . 
+            f f b b c b d d d d d d d c . . 
+            . f f f f b c c d d d d f f . . 
+            . . f b d d b c c f f b b f f . 
+            . . f d d d b . . f f b b b f . 
+            `, img`
+            . . . . b b b b . . . . . . . . 
+            . . . b 2 2 2 2 b b b b . . . . 
+            . . b b 2 2 2 2 2 1 1 b b c c . 
+            . . b 1 1 2 2 2 2 2 1 1 2 2 c c 
+            . . b 1 1 2 2 2 2 2 2 2 2 2 b c 
+            . . c 2 2 2 2 2 2 2 c c c b b f 
+            . c 2 2 2 2 2 b b b b c c c b f 
+            c 2 2 2 2 b b d d d d d c c b f 
+            c 2 2 c b d d d d d d c d c c . 
+            f 2 c c c d d d c d d c d b c . 
             f b c c c d d d c d d d d d f . 
             f b c c c d d d d d b b b d f . 
             f f b b c b d d d d d d d c . . 
@@ -1364,10 +1480,13 @@ let spore: Sprite = null
 let shmooga = 0
 let boga_temp = 0
 let blocking = false
+let yooga_temp = 0
 let fireball: Sprite = null
-let player_2_ability_list: Image[] = []
+let googa_temp = 0
 let player_2_move_list: Image[] = []
+let player_2_ability_list: Image[] = []
 let player_2: Sprite = null
+let dooga_temp = 0
 let player_1_move_list: Image[] = []
 let blank_proj: Sprite = null
 let player_1_ability_list: Image[] = []
@@ -1383,6 +1502,7 @@ player_2_class = game.askForString("what pet will you have?")
 // tilemap
 tiles.setCurrentTilemap(tilemap`level1`)
 tiles.setTileAt(tiles.getTileLocation(1, 1), sprites.dungeon.floorLight2)
+tiles.setTileAt(tiles.getTileLocation(1, 2), sprites.dungeon.floorLight2)
 character_spawner()
 info.setScore(0)
 tiles.placeOnTile(player_1, tiles.getTileLocation(2, 2))
@@ -1453,7 +1573,7 @@ game.onUpdateInterval(1000, function () {
                 enemybad.setVelocity(-20, randint(-20, 20))
             }
         } else if (phasecheck() == 3) {
-            for (let index = 0; index < 3; index++) {
+            for (let index = 0; index < 2; index++) {
                 enemybad = sprites.create(img`
                     . . f f f . . . . . . . . f f f 
                     . f f c c . . . . . . f c b b c 
@@ -1476,7 +1596,7 @@ game.onUpdateInterval(1000, function () {
                 enemybad.setVelocity(-30, randint(-30, 30))
             }
         } else if (phasecheck() == 4) {
-            for (let index = 0; index < 4; index++) {
+            for (let index = 0; index < 2; index++) {
                 enemybad = sprites.create(img`
                     ...........fffffff...ccfff..........
                     ..........fbbbbbbbffcbbbbf..........
